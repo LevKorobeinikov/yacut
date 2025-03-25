@@ -1,0 +1,15 @@
+BAD_NAME_SHORT_LINK = 'Указано недопустимое имя для короткой ссылки'
+ID_NOT_FOUND = 'Указанный id не найден'
+LOCALHOST = 'http://localhost/'
+LONG_LINK = 'Введите длинную ссылку'
+MESSAGE_FOR_SHORT_LINK = 'Предложенный вариант короткой ссылки уже существует.'
+MISSING_REQUEST = 'Отсутствует тело запроса'
+ORIGINAL_MAX_LENGTH = 256
+ORIGINAL_MIN_LENGTH = 1
+REGEXP = r'^[A-Za-z0-9]+$'
+REQUIRED_FIELD = 'Обязательное поле'
+SHORT_LINK = 'Введите вашу короткую ссылку'
+SHORT_MAX_LENGTH = 16
+TOO_LONG_LINK = 'Длина больше 16 символов'
+URL_MISSING = '"url" является обязательным полем!'
+WRONG_URL = 'Провертье вводимый адрес'
