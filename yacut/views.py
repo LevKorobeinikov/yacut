@@ -1,108 +1,43 @@
-import hashlib
-import random
-import re
 from http import HTTPStatus
 
 from flask import abort, flash, redirect, render_template, url_for
 
-from yacut.constants import MESSAGE_FOR_SHORT_LINK, REGEXP, SHORT_MAX_LENGTH
+from yacut.constants import MESSAGE_FOR_SHORT_LINK
 from yacut.exceptions import ShortIdError
 from yacut.forms import YaCutForm
 from yacut.models import URLMap
-from . import app, db
 
-
-def get_unique_short_id(url):
-    """
-    Функция создания  short ссылки.
-    """
-    generaited_short_id = random.choices(
-        hashlib.md5(url.encode()).hexdigest(), k=6
-    )
-    short_id = ''.join(generaited_short_id)
-    while get_short_from_db(short_id) is not None:
-        get_unique_short_id(url)
-    return short_id
-
-
-def get_short_from_db(short):
-    """
-    Проверяет наличие в базе данных.
-    """
-    return URLMap.query.filter_by(short=short).first()
-
-
-def save_in_db(short_id, original):
-    """
-    Функция сохраняющая  ссылку и short ссылку  в базу данных.
-    """
-    url_map = URLMap(
-        original=original,
-        short=short_id,
-    )
-    db.session.add(url_map)
-    db.session.commit()
-
-
-def validate_custom_id(custom_id):
-    """
-    Функция валидирующая кастомуню ссылку.
-    """
-    return bool(
-        len(custom_id) > SHORT_MAX_LENGTH or
-        not re.match(REGEXP, custom_id)
-    )
-
-
-def creating_custom_id(custom_id, original):
-    """
-    Функция создает и сохраняет.
-    """
-    if not custom_id or custom_id == '':
-        custom_id = get_unique_short_id(original)
-    else:
-        if validate_custom_id(custom_id):
-            raise ValueError()
-        if get_short_from_db(custom_id) is not None:
-            raise ShortIdError()
-
-    save_in_db(
-        custom_id,
-        original,
-    )
-    return custom_id
+from . import app
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
     """
-    Функция обрабатывающая запросы.
-    GET запрос отображает форму на экране.
-    POST запрос создает короткую ссылку.
+    Обработчик главной страницы.
+    - GET: отображает форму.
+    - POST: создаёт короткую ссылку.
     """
-    if YaCutForm().validate_on_submit():
+    form = YaCutForm()
+    short = None
+    if form.validate_on_submit():
         try:
-            custom_id = creating_custom_id(
-                YaCutForm().custom_id.data,
-                YaCutForm().original_link.data
+            url_map = URLMap.create(
+                form.original_link.data,
+                form.custom_id.data
             )
+            short = url_map.get_short_url()
         except ShortIdError:
             flash(MESSAGE_FOR_SHORT_LINK, 'error')
-            return render_template('yacut.html', form=YaCutForm())
-        flash(url_for(
-            'redirect_short_url',
-            short=custom_id,
-            _external=True), 'short_link'
-        )
-    return render_template('yacut.html', form=YaCutForm())
+            return render_template('index.html', form=YaCutForm())
+    return render_template('index.html', form=form, short=short)
 
 
 @app.route('/<string:short>', methods=['GET'])
 def redirect_short_url(short):
     """
-    Функция перенаправляет на оригинальную ссылку.
+    Перенаправляет пользователя на оригинальную ссылку.
     """
-    url_map = get_short_from_db(short)
-    if url_map is None:
-        return abort(HTTPStatus.NOT_FOUND)
+    url_map = URLMap.get_by_short_id(short)
+    if not url_map:
+        abort(HTTPStatus.NOT_FOUND)
     return redirect(url_map.original)

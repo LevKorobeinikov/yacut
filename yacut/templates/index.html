@@ -40,21 +40,15 @@
             <p class="text-center">
             <h5 class="text-center">
               <p class="py-3 mb-3">
-                  {% with messages = get_flashed_messages(category_filter=['error']) %}
-                    {% if messages %}
-                      {% for message in messages %}
-                        {{ message}}
-                      {% endfor %}
-                    {% endif %}
+                  {% with messages = get_flashed_messages() %}
+                    {% for message in messages %}
+                      {{ message}}
+                    {% endfor %}
                   {% endwith %}
-                  {% with messages = get_flashed_messages(category_filter=['short_link']) %}
-                    {% if messages %}
-                      {% for message in messages %}
-                      <p>Ваша новая ссылка готова:</p>
-                      <a href="{{ message }}">{{ message }}</a>
-                      {% endfor %}
-                    {% endif %}
-                  {% endwith %}
+                  {% if short %}
+                    <p>Ваша новая ссылка готова:</p>
+                    <a href="{{ short }}">{{ short }}</a>
+                  {% endif %}
                 </p>
             </h5>
             </p>
