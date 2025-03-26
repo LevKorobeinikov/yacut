@@ -60,29 +60,29 @@
 
 [http://127.0.0.1:5000/api/id/](http://127.0.0.1:5000/api/id/) — POST-запрос на создание новой короткой ссылки
 
-    ```bach
+
     {
       "url": "string",
       "custom_id": "string"
     }
-    ```
+
 ответ:
 
-    ```bach
+
     {
       "short_link": "string"
       "url": "string",
     }
-    ```
+
 
 [http://127.0.0.1:5000/api/id/<short_id>/](http://127.0.0.1:5000/api/id/<short_id>/) — GET-запрос на получение оригинальной ссылки по указанному короткому идентификатору.
 
 oтвет:
 
-    ```bach
+
     {
       "url": "string"
     }
-    ```
+
 
 ## Автор проекта - [Коробейников Лев Сергеевич](https://github.com/LevKorobeinikov)
