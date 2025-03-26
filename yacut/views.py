@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from flask import abort, flash, redirect, render_template, url_for
+from flask import abort, flash, redirect, render_template
 
 from yacut.constants import MESSAGE_FOR_SHORT_LINK
 from yacut.exceptions import ShortIdError
