@@ -59,14 +59,14 @@
 ## Примеры запросов к API
 
 [http://127.0.0.1:5000/api/id/](http://127.0.0.1:5000/api/id/) — POST-запрос на создание новой короткой ссылки
-    ```bach
+    ```json
     {
       "url": "string",
       "custom_id": "string"
     }
     ```
 ответ:
-    ```bach
+    ```json
     {
       "short_link": "string"
       "url": "string",
@@ -76,7 +76,7 @@
 [http://127.0.0.1:5000/api/id/<short_id>/](http://127.0.0.1:5000/api/id/<short_id>/) — GET-запрос на получение оригинальной ссылки по указанному короткому идентификатору.
 
 oтвет:
-    ```bach
+    ```json
     {
       "url": "string"
     }
