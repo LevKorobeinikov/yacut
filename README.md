@@ -7,6 +7,7 @@
 - **Python 3.9** 
 - **Flask**
 - **SQLAlchemy**
+- **SQLite**
 - **Alembic**
 - **Jinja2**
 - **WTForms**
@@ -32,25 +33,15 @@
     source venv/bin/activate
     ```
 
-3. Обновить PIP:
-    Для Windows:
-    ```bash
-    python -m pip install --upgrade pip
-    ```
-    Для Linux/macOS:
-    ```bash
-    python3 -m pip install --upgrade pip
-    ```
-
-4. Установка зависимостей:
+3. Установка зависимостей:
     ```bach
     pip install -r requirements.txt
     ```
-5. Создайте файл с переменными окружения .env. Укажите в файле значения локальных переменных, представленных в образце .env.example
+4. Создайте файл с переменными окружения .env. Укажите в файле значения локальных переменных, представленных в образце .env.example
     ```bach
     touch .env
     ```
-6. Примените миграции и запустите проект.
+5. Примените миграции и запустите проект.
     ```bach
     flask db upgrade
     flask run

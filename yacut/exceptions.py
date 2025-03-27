@@ -1,2 +1,2 @@
-class ShortIdError(Exception):
+class ShortError(Exception):
     """Обработка исключения короткой ссылки"""

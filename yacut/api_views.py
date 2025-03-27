@@ -3,14 +3,13 @@ from http import HTTPStatus
 from flask import jsonify, request
 
 from yacut.constants import (
-    BAD_NAME_SHORT_LINK, ID_NOT_FOUND,
-    MESSAGE_FOR_SHORT_LINK, MISSING_REQUEST,
+    BAD_NAME_SHORT, ID_NOT_FOUND, GENERATE_ERROR,
+    MESSAGE_FOR_SHORT, MISSING_REQUEST,
     URL_MISSING
 )
 from yacut.error_handlers import InvalidAPIUsage
-from yacut.exceptions import ShortIdError
+from yacut.exceptions import ShortError
 from yacut.models import URLMap
-
 from . import app
 
 
@@ -20,7 +19,7 @@ def get_original_url(short):
     GET-запрос на получение оригинальной ссылки
     по указанному короткому идентификатору.
     """
-    url_map = URLMap.get_by_short_id(short)
+    url_map = URLMap.get(short)
     if url_map is None:
         raise InvalidAPIUsage(
             ID_NOT_FOUND,
@@ -44,7 +43,9 @@ def add_url():
     try:
         url_map = URLMap.create(original, short)
     except ValueError:
-        raise InvalidAPIUsage(BAD_NAME_SHORT_LINK)
-    except ShortIdError:
-        raise InvalidAPIUsage(MESSAGE_FOR_SHORT_LINK)
+        raise InvalidAPIUsage(BAD_NAME_SHORT)
+    except ShortError:
+        raise InvalidAPIUsage(MESSAGE_FOR_SHORT)
+    except RuntimeError:
+        raise InvalidAPIUsage(GENERATE_ERROR)
     return jsonify(url_map.to_dict()), HTTPStatus.CREATED

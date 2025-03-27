@@ -1,14 +1,17 @@
-BAD_NAME_SHORT_LINK = 'Указано недопустимое имя для короткой ссылки'
+BAD_NAME_SHORT = 'Указано недопустимое имя для короткой ссылки'
 CREATE = 'СОЗДАТЬ'
-GENERATE_ERROR = 'Не удалось сгенерировать уникальный короткий идентификатор.'
+GENERATE_ERROR = (
+    'Не удалось сгенерировать идентификатор после {MAX_ATTEMPTS} попыток '
+)
 ID_NOT_FOUND = 'Указанный id не найден'
 LENGHT_SHORT = 6
 LONG_LINK = 'Введите длинную ссылку'
 MAX_ATTEMPTS = 10
-MESSAGE_FOR_SHORT_LINK = 'Предложенный вариант короткой ссылки уже существует.'
+MESSAGE_FOR_SHORT = 'Предложенный вариант короткой ссылки уже существует.'
 MISSING_REQUEST = 'Отсутствует тело запроса'
 ORIGINAL_MAX_LENGTH = 500
-REDIRECT_SHORT_URL = 'redirect_short_url'
+ORIGINAL_URL_LONG = 'Оригинальная ссылка сликшом длинная.'
+REDIRECT_SHORT = 'redirect_short'
 REQUIRED_FIELD = 'Обязательное поле'
 SHORT_LINK = 'Введите вашу короткую ссылку'
 SHORT_MAX_LENGTH = 16

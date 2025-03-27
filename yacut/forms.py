@@ -1,11 +1,13 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, URLField
-from wtforms.validators import (URL, DataRequired, Length, Optional, Regexp,
-                                ValidationError)
+from wtforms.validators import (
+    URL, DataRequired, Length,
+    Optional, Regexp, ValidationError
+)
 
 from yacut.constants import (
-    BAD_NAME_SHORT_LINK, CREATE, LONG_LINK,
-    MESSAGE_FOR_SHORT_LINK, ORIGINAL_MAX_LENGTH,
+    BAD_NAME_SHORT, CREATE, LONG_LINK,
+    MESSAGE_FOR_SHORT, ORIGINAL_MAX_LENGTH,
     REQUIRED_FIELD, SHORT_LINK, SHORT_MAX_LENGTH,
     TOO_LONG_LINK, WRONG_URL
 )
@@ -31,12 +33,11 @@ class YaCutForm(FlaskForm):
             Optional(),
             Regexp(
                 regex=REGEXP,
-                message=BAD_NAME_SHORT_LINK)
+                message=BAD_NAME_SHORT)
         ]
     )
     create = SubmitField(CREATE)
 
     def validate_custom_id(self, field):
-        if field.data:
-            if URLMap.get_by_short_id(field.data):
-                raise ValidationError(MESSAGE_FOR_SHORT_LINK)
+        if field.data and URLMap.get(field.data):
+            raise ValidationError(MESSAGE_FOR_SHORT)

@@ -1,21 +1,18 @@
 import random
+from datetime import datetime
 import re
-import string
-from datetime import datetime, timezone
 
-from flask import url_for
+from flask import url_for, request
 
+from settings import ALPHABET, REGEXP
 from yacut import db
 from yacut.constants import (
-    BAD_NAME_SHORT_LINK, GENERATE_ERROR, LENGHT_SHORT,
-    MAX_ATTEMPTS, MESSAGE_FOR_SHORT_LINK,
-    ORIGINAL_MAX_LENGTH, REDIRECT_SHORT_URL,
+    BAD_NAME_SHORT, GENERATE_ERROR, LENGHT_SHORT,
+    MAX_ATTEMPTS, MESSAGE_FOR_SHORT,
+    ORIGINAL_MAX_LENGTH, ORIGINAL_URL_LONG, REDIRECT_SHORT,
     SHORT_MAX_LENGTH
 )
-from yacut.exceptions import ShortIdError
-
-ALPHABET = string.ascii_letters + string.digits
-REGEXP = f'^[{re.escape(ALPHABET)}]+$'
+from yacut.exceptions import ShortError
 
 
 class URLMap(db.Model):
@@ -28,7 +25,7 @@ class URLMap(db.Model):
     timestamp = db.Column(
         db.DateTime,
         index=True,
-        default=lambda: datetime.now(timezone.utc)
+        default=datetime.now()
     )
 
     def to_dict(self):
@@ -44,26 +41,24 @@ class URLMap(db.Model):
         """
         Расчёт урла коротюльки.
         """
-        return url_for(REDIRECT_SHORT_URL, short=self.short, _external=True)
+        return url_for(REDIRECT_SHORT, short=self.short, _external=True)
 
     @staticmethod
-    def get_by_short_id(short):
+    def get(short):
         """
         Поиск ссылки по короткому идентификатору.
         """
         return URLMap.query.filter_by(short=short).first()
 
     @staticmethod
-    def generate_short_id(
-        original, length=LENGHT_SHORT, max_attempts=MAX_ATTEMPTS
-    ):
+    def generate_short(length=LENGHT_SHORT, max_attempts=MAX_ATTEMPTS):
         """
         Генерирует уникальный короткий идентификатор.
         Ограничивает число попыток во избежание бесконечного цикла.
         """
         for _ in range(max_attempts):
             short = ''.join(random.choices(ALPHABET, k=length))
-            if not URLMap.get_by_short_id(short):
+            if not URLMap.get(short):
                 return short
         raise RuntimeError(GENERATE_ERROR)
 
@@ -72,15 +67,18 @@ class URLMap(db.Model):
         """
         Создаёт и сохраняет новую запись в БД.
         """
+        if len(original) > ORIGINAL_MAX_LENGTH:
+            raise ValueError(ORIGINAL_URL_LONG)
         if short:
-            if len(short) > SHORT_MAX_LENGTH or not re.match(
-                REGEXP, short
-            ):
-                raise ValueError(BAD_NAME_SHORT_LINK)
-            if URLMap.get_by_short_id(short):
-                raise ShortIdError(MESSAGE_FOR_SHORT_LINK)
+            if not request.form:
+                if len(short) > SHORT_MAX_LENGTH or not re.match(
+                    REGEXP, short
+                ):
+                    raise ValueError(BAD_NAME_SHORT)
+            if URLMap.get(short):
+                raise ShortError(MESSAGE_FOR_SHORT)
         else:
-            short = URLMap.generate_short_id(original)
+            short = URLMap.generate_short()
         url_map = URLMap(original=original, short=short)
         db.session.add(url_map)
         db.session.commit()
