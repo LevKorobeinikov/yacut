@@ -25,7 +25,7 @@ class URLMap(db.Model):
     timestamp = db.Column(
         db.DateTime,
         index=True,
-        default=datetime.now()
+        default=datetime.now
     )
 
     def to_dict(self):
@@ -63,21 +63,21 @@ class URLMap(db.Model):
         raise RuntimeError(GENERATE_ERROR)
 
     @staticmethod
-    def create(original, short=None):
+    def create(original, short=None, skip_validation=False):
         """
         Создаёт и сохраняет новую запись в БД.
         """
-        if len(original) > ORIGINAL_MAX_LENGTH:
-            raise ValueError(ORIGINAL_URL_LONG)
-        if short:
-            if not request.form:
+        if not skip_validation:
+            if len(original) > ORIGINAL_MAX_LENGTH:
+                raise ValueError(ORIGINAL_URL_LONG)
+            if short:
                 if len(short) > SHORT_MAX_LENGTH or not re.match(
                     REGEXP, short
                 ):
                     raise ValueError(BAD_NAME_SHORT)
-            if URLMap.get(short):
-                raise ShortError(MESSAGE_FOR_SHORT)
-        else:
+                if URLMap.get(short):
+                    raise ShortError(MESSAGE_FOR_SHORT)
+        if not short:
             short = URLMap.generate_short()
         url_map = URLMap(original=original, short=short)
         db.session.add(url_map)

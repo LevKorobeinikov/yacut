@@ -3,9 +3,7 @@ from http import HTTPStatus
 from flask import jsonify, request
 
 from yacut.constants import (
-    BAD_NAME_SHORT, ID_NOT_FOUND, GENERATE_ERROR,
-    MESSAGE_FOR_SHORT, MISSING_REQUEST,
-    URL_MISSING
+    ID_NOT_FOUND, MISSING_REQUEST, URL_MISSING
 )
 from yacut.error_handlers import InvalidAPIUsage
 from yacut.exceptions import ShortError
@@ -38,14 +36,14 @@ def add_url():
     data = request.get_json()
     if not data.get('url'):
         raise InvalidAPIUsage(URL_MISSING)
-    original = data.get('url')
+    original = data['url']
     short = data.get('custom_id')
     try:
         url_map = URLMap.create(original, short)
-    except ValueError:
-        raise InvalidAPIUsage(BAD_NAME_SHORT)
-    except ShortError:
-        raise InvalidAPIUsage(MESSAGE_FOR_SHORT)
-    except RuntimeError:
-        raise InvalidAPIUsage(GENERATE_ERROR)
+    except ValueError as error:
+        raise InvalidAPIUsage(str(error))
+    except ShortError as error:
+        raise InvalidAPIUsage(str(error))
+    except RuntimeError as error:
+        raise InvalidAPIUsage(str(error))
     return jsonify(url_map.to_dict()), HTTPStatus.CREATED

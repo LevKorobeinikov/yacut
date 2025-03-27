@@ -18,19 +18,21 @@ def index_view():
     """
     form = YaCutForm()
     short_url = None
-    if form.validate_on_submit():
-        try:
-            url_map = URLMap.create(
-                form.original_link.data,
-                form.custom_id.data
-            )
-            short_url = url_map.get_short_url()
-        except ValueError:
-            flash(BAD_NAME_SHORT, 'error')
-        except ShortError:
-            flash(MESSAGE_FOR_SHORT, 'error')
-        except RuntimeError:
-            flash(GENERATE_ERROR)
+    if not form.validate_on_submit():
+        return render_template('index.html', form=form)
+    try:
+        url_map = URLMap.create(
+            form.original_link.data,
+            form.custom_id.data,
+            skip_validation=True
+        )
+        short_url = url_map.get_short_url()
+    except ValueError as error:
+        flash(f'{BAD_NAME_SHORT}: {str(error)}', 'error')
+    except ShortError as error:
+        flash(f'{MESSAGE_FOR_SHORT}: {str(error)}', 'error')
+    except RuntimeError as error:
+        flash(f'{GENERATE_ERROR}: {str(error)}', 'error')
     return render_template(
         'index.html', form=form, short_url=short_url
     )
