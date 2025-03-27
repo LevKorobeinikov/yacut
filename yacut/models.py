@@ -2,7 +2,7 @@ import random
 from datetime import datetime
 import re
 
-from flask import url_for, request
+from flask import url_for
 
 from settings import ALPHABET, REGEXP
 from yacut import db
